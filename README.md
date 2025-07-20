@@ -1,4 +1,4 @@
-# STGAT Store Sales Forecasting Project
+# STGAT Store Sales Forecasting Project  
 
 **Spatial-Temporal Graph Attention Network for retail sales forecasting using Corporación Favorita dataset**
 
