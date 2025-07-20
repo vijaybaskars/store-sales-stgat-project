@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "creation_date": "2025-07-20T18:34:58.093572",
+    "selection_method": "data_driven_multi_criteria",
+    "total_candidates": 1782,
+    "qualified_candidates": 1190,
+    "final_selected": 10,
+    "train_test_split_date": "2017-07-01",
+    "selection_criteria": {
+      "min_avg_daily_sales": 5,
+      "min_total_days": 200,
+      "min_train_days": 150,
+      "min_test_days": 30,
+      "min_non_zero_percentage": 30,
+      "min_quality_score": 50
+    }
+  },
+  "cases": [
+    {
+      "case_id": "store_49_family_PET_SUPPLIES",
+      "store_nbr": 49,
+      "family": "PET SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 10.34,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 60.7,
+        "quality_score": 98.35,
+        "volume_tier": "Medium-Low"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.773,
+        "coefficient_of_variation": 1.018
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_8_family_PET_SUPPLIES",
+      "store_nbr": 8,
+      "family": "PET SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 10.15,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 60.6,
+        "quality_score": 98.1,
+        "volume_tier": "Medium-Low"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.718,
+        "coefficient_of_variation": 0.999
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_44_family_SCHOOL_AND_OFFICE_SUPPLIES",
+      "store_nbr": 44,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 17.54,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 60.0,
+        "quality_score": 99.19,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.252,
+        "coefficient_of_variation": 3.202
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_45_family_SCHOOL_AND_OFFICE_SUPPLIES",
+      "store_nbr": 45,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 16.27,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 59.6,
+        "quality_score": 99.05,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.247,
+        "coefficient_of_variation": 3.946
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_39_family_MEATS",
+      "store_nbr": 39,
+      "family": "MEATS",
+      "selection_metrics": {
+        "avg_daily_sales": 239.97,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 99.7,
+        "quality_score": 98.62,
+        "volume_tier": "High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "weak_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.055,
+        "coefficient_of_variation": 9.264
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_53_family_PRODUCE",
+      "store_nbr": 53,
+      "family": "PRODUCE",
+      "selection_metrics": {
+        "avg_daily_sales": 1109.28,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 67.8,
+        "quality_score": 98.52,
+        "volume_tier": "High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.792,
+        "coefficient_of_variation": 1.029
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_26_family_FROZEN_FOODS",
+      "store_nbr": 26,
+      "family": "FROZEN FOODS",
+      "selection_metrics": {
+        "avg_daily_sales": 77.44,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 99.7,
+        "quality_score": 98.9,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.041,
+        "coefficient_of_variation": 2.888
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_46_family_SCHOOL_AND_OFFICE_SUPPLIES",
+      "store_nbr": 46,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 12.94,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 58.7,
+        "quality_score": 98.78,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.229,
+        "coefficient_of_variation": 3.834
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_47_family_SCHOOL_AND_OFFICE_SUPPLIES",
+      "store_nbr": 47,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 12.4,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 58.7,
+        "quality_score": 98.76,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.211,
+        "coefficient_of_variation": 4.715
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "store_48_family_SCHOOL_AND_OFFICE_SUPPLIES",
+      "store_nbr": 48,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "selection_metrics": {
+        "avg_daily_sales": 16.2,
+        "total_days": 1684,
+        "train_days": 1638,
+        "test_days": 46,
+        "non_zero_percentage": 58.1,
+        "quality_score": 98.58,
+        "volume_tier": "Medium-High"
+      },
+      "pattern_characteristics": {
+        "seasonal_pattern": "strong_seasonal",
+        "trend_direction": "increasing",
+        "trend_strength": 0.19,
+        "coefficient_of_variation": 4.203
+      },
+      "validation_status": {
+        "passed": true,
+        "quality_flags": []
+      }
+    }
+  ]
+}
