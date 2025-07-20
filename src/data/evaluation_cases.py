@@ -7,6 +7,7 @@ notebooks and GCP deployment environments.
 
 import json
 import pandas as pd
+import os
 from typing import List, Dict, Any, Tuple
 from datetime import datetime
 
@@ -14,8 +15,20 @@ class EvaluationCaseManager:
     """
     Manages evaluation cases for consistent model comparison
     """
-    def __init__(self, cases_filepath: str = '../results/evaluation_cases.json'):
-        self.cases_filepath = cases_filepath
+    def __init__(self, cases_filepath: str = None):
+        if cases_filepath is None:
+            # Auto-detect path based on current working directory
+            if os.path.exists('results/evaluation_cases.json'):
+                # Running from project root
+                self.cases_filepath = 'results/evaluation_cases.json'
+            elif os.path.exists('../results/evaluation_cases.json'):
+                # Running from notebooks directory
+                self.cases_filepath = '../results/evaluation_cases.json'
+            else:
+                # Fallback - assume project root structure
+                self.cases_filepath = 'results/evaluation_cases.json'
+        else:
+            self.cases_filepath = cases_filepath
         self.cases_data = self.load_cases()
     
     def load_cases(self) -> Dict[str, Any]:
@@ -114,7 +127,7 @@ class EvaluationCaseManager:
         return self.cases_data.get('metadata', {})
 
 # Convenience functions for direct use
-def load_evaluation_cases(filepath: str = '../results/evaluation_cases.json') -> List[Dict[str, Any]]:
+def load_evaluation_cases(filepath: str = None) -> List[Dict[str, Any]]:
     """Load evaluation cases directly"""
     manager = EvaluationCaseManager(filepath)
     return manager.get_cases_list()

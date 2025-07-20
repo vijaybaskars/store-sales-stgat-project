@@ -1,0 +1,25 @@
+{
+  "phase": "Phase 2: Traditional Baselines",
+  "evaluation_date": "2025-07-20 23:44:24",
+  "test_split_date": "2017-07-01",
+  "forecast_horizon": 15,
+  "total_cases": 10,
+  "successful_evaluations": 10,
+  "best_model": "arima",
+  "best_rmsle": 0.47545420286284534,
+  "model_rankings": {
+    "arima": 0.47545420286284534,
+    "moving_average_7": 0.5045589779870457,
+    "moving_average_14": 0.5090357707483623,
+    "seasonal_naive": 0.5211974752923962,
+    "exponential_smoothing": 0.5274312932849475,
+    "linear_trend": 1.173851807453705
+  },
+  "metadata": {
+    "test_split_date": "2017-07-01",
+    "forecast_horizon": 15,
+    "total_cases": 10,
+    "successful_cases": 10
+  },
+  "integration_status": "Successfully integrated with Phase 1 infrastructure"
+}

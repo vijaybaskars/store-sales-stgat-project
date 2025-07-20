@@ -1,0 +1,7 @@
+Rank,Model,Mean_RMSLE,Std_RMSLE,Cases_Evaluated
+1,arima,0.4755,0.214,10.0
+2,moving_average_7,0.5046,0.202,10.0
+3,moving_average_14,0.509,0.192,10.0
+4,seasonal_naive,0.5212,0.2223,10.0
+5,exponential_smoothing,0.5274,0.2138,10.0
+6,linear_trend,1.1739,0.5949,10.0

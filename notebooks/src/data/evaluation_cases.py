@@ -14,7 +14,7 @@ class EvaluationCaseManager:
     """
     Manages evaluation cases for consistent model comparison
     """
-    def __init__(self, cases_filepath: str = '../results/evaluation_cases.json'):
+    def __init__(self, cases_filepath: str = 'results/evaluation_cases.json'):
         self.cases_filepath = cases_filepath
         self.cases_data = self.load_cases()
     
@@ -114,7 +114,7 @@ class EvaluationCaseManager:
         return self.cases_data.get('metadata', {})
 
 # Convenience functions for direct use
-def load_evaluation_cases(filepath: str = '../results/evaluation_cases.json') -> List[Dict[str, Any]]:
+def load_evaluation_cases(filepath: str = 'results/evaluation_cases.json') -> List[Dict[str, Any]]:
     """Load evaluation cases directly"""
     manager = EvaluationCaseManager(filepath)
     return manager.get_cases_list()
