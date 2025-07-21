@@ -7,104 +7,90 @@ warnings.filterwarnings('ignore')
 class Phase35DataProcessor:
     """
     Advanced data preprocessing for Phase 3.5 optimization
-    Implements log1p transformation, cyclical encoding, and enhanced features
+    Integrates with existing EvaluationCaseManager infrastructure
     """
     
     def __init__(self):
         self.scalers = {}
-        self.label_encoders = {}
         self.feature_stats = {}
+        print("🔧 Phase35DataProcessor initialized")
     
     def apply_log1p_transformation(self, sales_data):
-        """
-        Apply log1p transformation to sales data
-        Critical for handling skewed sales distributions
-        """
+        """Apply log1p transformation to sales data"""
         print("🔄 Applying log1p transformation...")
         
-        # Create copy to avoid modifying original
         data = sales_data.copy()
-        
-        # Store original sales for evaluation
         data['sales_original'] = data['sales']
-        
-        # Apply log1p transformation (handles zeros naturally)
         data['sales_log1p'] = np.log1p(data['sales'])
-        
-        # Verify transformation
-        print(f"   Original sales range: {data['sales'].min():.2f} to {data['sales'].max():.2f}")
-        print(f"   Log1p sales range: {data['sales_log1p'].min():.4f} to {data['sales_log1p'].max():.4f}")
-        
-        # Replace sales column with transformed version
         data['sales'] = data['sales_log1p']
+        
+        print(f"   Sales range: {data['sales_original'].min():.2f} to {data['sales_original'].max():.2f}")
+        print(f"   Log1p range: {data['sales'].min():.4f} to {data['sales'].max():.4f}")
         
         return data
     
     def create_cyclical_features(self, data):
-        """
-        Create cyclical encodings for temporal features
-        Essential for capturing weekly/monthly patterns
-        """
+        """Create cyclical encodings for temporal features"""
         print("🔄 Creating cyclical temporal features...")
         
-        # Ensure date column is datetime
         if 'date' in data.columns:
             data['date'] = pd.to_datetime(data['date'])
             
-            # Day of week (0-6)
+            # Day of week cyclical encoding
             data['dayofweek'] = data['date'].dt.dayofweek
             data['dayofweek_sin'] = np.sin(2 * np.pi * data['dayofweek'] / 7)
             data['dayofweek_cos'] = np.cos(2 * np.pi * data['dayofweek'] / 7)
             
-            # Day of month (1-31)
-            data['dayofmonth'] = data['date'].dt.day
-            data['dayofmonth_sin'] = np.sin(2 * np.pi * data['dayofmonth'] / 31)
-            data['dayofmonth_cos'] = np.cos(2 * np.pi * data['dayofmonth'] / 31)
-            
-            # Month (1-12)
+            # Month cyclical encoding
             data['month'] = data['date'].dt.month
             data['month_sin'] = np.sin(2 * np.pi * data['month'] / 12)
             data['month_cos'] = np.cos(2 * np.pi * data['month'] / 12)
             
-            # Quarter (1-4)
-            data['quarter'] = data['date'].dt.quarter
-            data['quarter_sin'] = np.sin(2 * np.pi * data['quarter'] / 4)
-            data['quarter_cos'] = np.cos(2 * np.pi * data['quarter'] / 4)
+            # Day of month cyclical encoding
+            data['dayofmonth'] = data['date'].dt.day
+            data['dayofmonth_sin'] = np.sin(2 * np.pi * data['dayofmonth'] / 31)
+            data['dayofmonth_cos'] = np.cos(2 * np.pi * data['dayofmonth'] / 31)
             
-            print(f"   ✅ Created 8 cyclical features")
+            print(f"   ✅ Created 6 cyclical features")
         
         return data
     
     def create_enhanced_lag_features(self, data, store_id, family):
-        """
-        Create enhanced lag and rolling features
-        """
+        """Create enhanced lag and rolling features"""
         print(f"🔄 Creating enhanced features for Store {store_id}, {family}...")
         
-        # Filter to specific store-family
+        # Filter and sort data
         store_family_data = data[
             (data['store_nbr'] == store_id) & 
             (data['family'] == family)
         ].sort_values('date').copy()
         
         if len(store_family_data) < 30:
+            print(f"   ⚠️ Limited data: {len(store_family_data)} records")
             return store_family_data
         
-        # Lag features (multiple lags)
-        lag_periods = [1, 2, 3, 7, 14, 28]
+        # Enhanced lag features
+        lag_periods = [1, 2, 3, 7, 14, 21, 28]
         for lag in lag_periods:
             store_family_data[f'sales_lag_{lag}'] = store_family_data['sales'].shift(lag)
         
-        # Rolling statistics (multiple windows)
-        windows = [3, 7, 14, 28]
+        # Rolling statistics with multiple windows
+        windows = [3, 7, 14, 21, 28]
         for window in windows:
             store_family_data[f'sales_mean_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).mean()
             store_family_data[f'sales_std_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).std()
             store_family_data[f'sales_min_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).min()
             store_family_data[f'sales_max_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).max()
+            
+            # Additional statistical features
+            store_family_data[f'sales_q25_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).quantile(0.25)
+            store_family_data[f'sales_q75_{window}'] = store_family_data['sales'].rolling(window, min_periods=1).quantile(0.75)
         
-        # Trend features
+        # Trend and volatility features
         store_family_data['sales_trend_7'] = store_family_data['sales'].rolling(7, min_periods=2).apply(
+            lambda x: np.polyfit(range(len(x)), x, 1)[0] if len(x) > 1 else 0, raw=True
+        )
+        store_family_data['sales_trend_14'] = store_family_data['sales'].rolling(14, min_periods=2).apply(
             lambda x: np.polyfit(range(len(x)), x, 1)[0] if len(x) > 1 else 0, raw=True
         )
         
@@ -112,21 +98,18 @@ class Phase35DataProcessor:
         store_family_data['sales_volatility_7'] = store_family_data['sales'].rolling(7, min_periods=2).std()
         store_family_data['sales_volatility_14'] = store_family_data['sales'].rolling(14, min_periods=2).std()
         
-        # Fill NaN values
-        store_family_data = store_family_data.fillna(method='forward').fillna(0)
+        # Fill NaN values (using updated pandas method)
+        store_family_data = store_family_data.fillna(method='ffill').fillna(0)
         
-        print(f"   ✅ Created {len([c for c in store_family_data.columns if c.startswith('sales_')])} sales features")
+        feature_count = len([c for c in store_family_data.columns if c.startswith('sales_')])
+        print(f"   ✅ Created {feature_count} enhanced features")
         
         return store_family_data
     
     def apply_standardization(self, train_data, test_data, feature_columns):
-        """
-        Apply StandardScaler to feature columns
-        Critical for neural network convergence
-        """
+        """Apply StandardScaler to feature columns"""
         print("🔄 Applying StandardScaler to features...")
         
-        # Initialize scaler
         scaler = StandardScaler()
         
         # Fit on training data only
@@ -137,60 +120,78 @@ class Phase35DataProcessor:
         test_scaled = test_data.copy()
         test_scaled[feature_columns] = scaler.transform(test_data[feature_columns])
         
-        # Store scaler for future use
+        # Store scaler
         self.scalers['features'] = scaler
         
         print(f"   ✅ Standardized {len(feature_columns)} features")
-        print(f"   Feature means: {scaler.mean_[:5].round(4)}")  # Show first 5
-        print(f"   Feature stds: {scaler.scale_[:5].round(4)}")  # Show first 5
+        print(f"   Feature means (first 5): {scaler.mean_[:5].round(4)}")
+        print(f"   Feature stds (first 5): {scaler.scale_[:5].round(4)}")
         
-        return train_scaled, test_scaled
-    
-    def create_interaction_features(self, data):
-        """
-        Create interaction features between temporal and sales features
-        """
-        print("🔄 Creating interaction features...")
-        
-        # Sales * cyclical interactions
-        if 'sales_lag_7' in data.columns and 'dayofweek_sin' in data.columns:
-            data['sales_lag7_dayofweek'] = data['sales_lag_7'] * data['dayofweek_sin']
-            data['sales_mean7_month'] = data['sales_mean_7'] * data['month_sin']
-        
-        # Volatility * trend interactions
-        if 'sales_volatility_7' in data.columns and 'sales_trend_7' in data.columns:
-            data['volatility_trend_interaction'] = data['sales_volatility_7'] * data['sales_trend_7']
-        
-        print(f"   ✅ Created interaction features")
-        
-        return data
+        return train_scaled, test_scaled, scaler
     
     def get_feature_columns(self, data):
-        """
-        Identify all feature columns for modeling
-        """
+        """Identify all feature columns for modeling"""
         feature_cols = [col for col in data.columns if any([
             col.startswith('sales_lag_'),
             col.startswith('sales_mean_'),
             col.startswith('sales_std_'),
             col.startswith('sales_min_'),
             col.startswith('sales_max_'),
+            col.startswith('sales_q25_'),
+            col.startswith('sales_q75_'),
             col.startswith('sales_trend_'),
             col.startswith('sales_volatility_'),
             col.endswith('_sin'),
             col.endswith('_cos'),
-            col.endswith('_interaction'),
             col == 'onpromotion',
         ])]
         
         return feature_cols
     
-    def process_evaluation_case(self, train_data, test_data, store_id, family):
+    def process_evaluation_case(self, case_manager, store_id, family):
         """
         Complete preprocessing pipeline for a single evaluation case
+        Uses existing EvaluationCaseManager infrastructure
         """
         print(f"\n🔧 PROCESSING CASE: Store {store_id}, {family}")
         print("=" * 50)
+        
+        # Load sales data and use existing infrastructure to get case data
+        # First, we need the full sales dataset
+        import pandas as pd
+        import os
+        
+        # Try to load sales data
+        possible_paths = [
+            'data/raw/train.csv',
+            '../data/raw/train.csv', 
+            '../../data/raw/train.csv',
+            '../../../data/raw/train.csv'
+        ]
+        
+        sales_data = None
+        for path in possible_paths:
+            try:
+                if os.path.exists(path):
+                    sales_data = pd.read_csv(path)
+                    sales_data['date'] = pd.to_datetime(sales_data['date'])
+                    print(f"   ✅ Loaded sales data from: {path}")
+                    break
+            except:
+                continue
+        
+        if sales_data is None:
+            raise ValueError("Could not find sales data file (train.csv)")
+        
+        # Use the case manager's get_case_data method with the sales data
+        case_info = {'store_nbr': store_id, 'family': family}
+        train_data, test_data = case_manager.get_case_data(sales_data, case_info)
+        
+        if train_data is None or test_data is None:
+            raise ValueError(f"No data available for Store {store_id}, {family}")
+        
+        print(f"   Raw train data: {len(train_data)} records")
+        print(f"   Raw test data: {len(test_data)} records")
         
         # Step 1: Apply log1p transformation
         train_log = self.apply_log1p_transformation(train_data)
@@ -200,30 +201,22 @@ class Phase35DataProcessor:
         train_cyclical = self.create_cyclical_features(train_log)
         test_cyclical = self.create_cyclical_features(test_log)
         
-        # Step 3: Create enhanced features for this specific case
+        # Step 3: Create enhanced features
         train_enhanced = self.create_enhanced_lag_features(train_cyclical, store_id, family)
         test_enhanced = self.create_enhanced_lag_features(test_cyclical, store_id, family)
         
-        # Step 4: Create interaction features
-        train_interactions = self.create_interaction_features(train_enhanced)
-        test_interactions = self.create_interaction_features(test_enhanced)
+        # Step 4: Get feature columns
+        feature_columns = self.get_feature_columns(train_enhanced)
+        print(f"📊 Total features identified: {len(feature_columns)}")
         
-        # Step 5: Get feature columns
-        feature_columns = self.get_feature_columns(train_interactions)
-        print(f"📊 Total features: {len(feature_columns)}")
-        
-        # Step 6: Apply standardization
-        train_final, test_final = self.apply_standardization(
-            train_interactions, test_interactions, feature_columns
+        # Step 5: Apply standardization
+        train_final, test_final, scaler = self.apply_standardization(
+            train_enhanced, test_enhanced, feature_columns
         )
         
-        # Verification
         print(f"✅ PREPROCESSING COMPLETE:")
-        print(f"   Train shape: {train_final.shape}")
-        print(f"   Test shape: {test_final.shape}")
-        print(f"   Features: {len(feature_columns)}")
+        print(f"   Final train shape: {train_final.shape}")
+        print(f"   Final test shape: {test_final.shape}")
+        print(f"   Feature count: {len(feature_columns)}")
         
-        return train_final, test_final, feature_columns
-
-# Usage example
-processor = Phase35DataProcessor()
+        return train_final, test_final, feature_columns, scaler
