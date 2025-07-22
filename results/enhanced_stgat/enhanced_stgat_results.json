@@ -3,9 +3,9 @@
     "store_49_family_PET SUPPLIES": {
       "store_nbr": 49,
       "family": "PET SUPPLIES",
-      "test_rmsle": 0.38785199825581823,
-      "test_mae": 6.990211238031802,
-      "test_mape": 36.59459267566272,
+      "test_rmsle": 0.39526271811643976,
+      "test_mae": 7.365256309509277,
+      "test_mape": 38.63189310243776,
       "cv_value": 1.0381995264796309,
       "pattern_type": "REGULAR",
       "stgat_confidence": 0.8461800217628479,
@@ -18,9 +18,9 @@
     "store_8_family_PET SUPPLIES": {
       "store_nbr": 8,
       "family": "PET SUPPLIES",
-      "test_rmsle": 0.5008188346151081,
-      "test_mae": 8.855091260827106,
-      "test_mape": 52.784775907560174,
+      "test_rmsle": 0.5657619668484616,
+      "test_mae": 10.098251218381135,
+      "test_mape": 60.41172284404052,
       "cv_value": 1.0135318407400948,
       "pattern_type": "REGULAR",
       "stgat_confidence": 0.8486468195915222,
@@ -75,9 +75,9 @@
     "store_53_family_PRODUCE": {
       "store_nbr": 53,
       "family": "PRODUCE",
-      "test_rmsle": 0.2840519697717744,
-      "test_mae": 503.54669750339673,
-      "test_mape": 26.080949440351915,
+      "test_rmsle": 0.3037094503282686,
+      "test_mae": 540.9410211277174,
+      "test_mape": 28.538101815172485,
       "cv_value": 1.054317854684883,
       "pattern_type": "REGULAR",
       "stgat_confidence": 0.8445681929588318,
@@ -148,7 +148,7 @@
     "successful_evaluations": 10,
     "total_cases": 10,
     "overall_success_rate": 100.0,
-    "average_rmsle": 0.45190370721668893,
+    "average_rmsle": 0.46110484048173583,
     "beats_traditional_count": 5,
     "beats_phase36_count": 4,
     "traditional_success_rate": 50.0,
@@ -164,13 +164,13 @@
   "evaluation_metadata": {
     "phase": "Phase 4: Enhanced STGAT with Adaptive Pattern Selection",
     "model_type": "Enhanced STGAT",
-    "evaluation_date": "2025-07-22 17:38:42",
+    "evaluation_date": "2025-07-22 21:41:24",
     "cv_threshold": 1.5,
     "adaptive_mode": true
   },
   "performance_ranking": {
-    "vs_traditional": 4.962416989129557,
-    "vs_phase36": -7.860322819301289,
+    "vs_traditional": 3.027373189960914,
+    "vs_phase36": -10.056448207127538,
     "ranking": "2nd",
     "champion": false
   }

@@ -15,12 +15,12 @@
       "description": "Phase 3.6: Pattern-based adaptive selection"
     },
     "enhanced_stgat": {
-      "average_rmsle": 0.45190370721668893,
+      "average_rmsle": 0.46110484048173583,
       "success_rate_traditional": 50.0,
       "success_rate_phase36": 40.0,
       "description": "Phase 4: Enhanced STGAT with adaptive pattern selection",
       "ranking": "2nd"
     }
   },
-  "created_date": "2025-07-22 17:46:50"
+  "created_date": "2025-07-22 21:47:17"
 }
