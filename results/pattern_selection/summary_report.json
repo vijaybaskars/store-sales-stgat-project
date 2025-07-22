@@ -1,6 +1,6 @@
 {
   "phase": "Phase 3.6: Pattern-Based Model Selection",
-  "evaluation_date": "2025-07-21 17:18:20",
+  "evaluation_date": "2025-07-22 12:34:22",
   "methodology": {
     "pattern_metric": "Coefficient of Variation",
     "threshold": 1.5,
@@ -16,11 +16,11 @@
     "cases_beat_traditional": 6,
     "cases_beat_neural": 8,
     "cases_beat_both": 6,
-    "average_rmsle": 0.4155325508224849,
-    "total_improvement_traditional": 126.11450931128309,
-    "total_improvement_neural": 239.7867712724389,
-    "avg_improvement_traditional": 12.611450931128308,
-    "avg_improvement_neural": 23.97867712724389
+    "average_rmsle": 0.4189712170375797,
+    "total_improvement_traditional": 118.8828243163413,
+    "total_improvement_neural": 233.49576099967118,
+    "avg_improvement_traditional": 11.88828243163413,
+    "avg_improvement_neural": 23.349576099967116
   },
   "routing_summary": {
     "NEURAL": 3,

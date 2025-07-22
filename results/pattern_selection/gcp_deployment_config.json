@@ -10,11 +10,11 @@
   "performance_benchmarks": {
     "traditional_baseline": 0.4755,
     "neural_baseline": 0.5466,
-    "adaptive_average": 0.41553255082248486
+    "adaptive_average": 0.4189712170375797
   },
   "validation_results": {
     "success_rate_traditional": 60.0,
     "success_rate_neural": 80.0,
-    "average_improvement": 12.611450931128312
+    "average_improvement": 11.888282431634122
   }
 }
