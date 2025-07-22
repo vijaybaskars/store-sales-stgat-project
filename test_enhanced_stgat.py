@@ -42,11 +42,12 @@ def test_enhanced_stgat():
         print(f"❌ Failed to initialize enhanced evaluator: {e}")
         return False
     
-    # Test on a few cases
-    test_cases = evaluation_cases[:3]  # Test first 3 cases
+    # Test on all cases
+    test_cases = evaluation_cases  # Test all 10 cases
     results = []
     
     print(f"\n🧪 Testing Enhanced STGAT on {len(test_cases)} cases...")
+    print("This may take several minutes due to traditional model fitting...")
     
     for i, case in enumerate(test_cases, 1):
         store_nbr = case['store_nbr']

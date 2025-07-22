@@ -1,0 +1,26 @@
+{
+  "phase_comparison": {
+    "traditional_baseline": {
+      "average_rmsle": 0.4755,
+      "description": "Phase 2: Traditional models baseline"
+    },
+    "neural_baseline": {
+      "average_rmsle": 0.5466,
+      "description": "Phase 3: Neural models baseline"
+    },
+    "phase36_pattern_selection": {
+      "average_rmsle": 0.4189712170375797,
+      "success_rate_traditional": 60.0,
+      "success_rate_neural": 80.0,
+      "description": "Phase 3.6: Pattern-based adaptive selection"
+    },
+    "enhanced_stgat": {
+      "average_rmsle": 0.45190370721668893,
+      "success_rate_traditional": 50.0,
+      "success_rate_phase36": 40.0,
+      "description": "Phase 4: Enhanced STGAT with adaptive pattern selection",
+      "ranking": "2nd"
+    }
+  },
+  "created_date": "2025-07-22 17:46:50"
+}
