@@ -1,0 +1,37 @@
+{
+  "phase": "Phase 3.6: Pattern-Based Model Selection",
+  "evaluation_date": "2025-07-21 17:18:20",
+  "methodology": {
+    "pattern_metric": "Coefficient of Variation",
+    "threshold": 1.5,
+    "regular_model": "Neural (LSTM variants)",
+    "volatile_model": "Traditional (ARIMA, etc.)",
+    "baseline_comparisons": {
+      "traditional_baseline": 0.4755,
+      "neural_baseline": 0.5466
+    }
+  },
+  "results_summary": {
+    "cases_evaluated": 10,
+    "cases_beat_traditional": 6,
+    "cases_beat_neural": 8,
+    "cases_beat_both": 6,
+    "average_rmsle": 0.4155325508224849,
+    "total_improvement_traditional": 126.11450931128309,
+    "total_improvement_neural": 239.7867712724389,
+    "avg_improvement_traditional": 12.611450931128308,
+    "avg_improvement_neural": 23.97867712724389
+  },
+  "routing_summary": {
+    "NEURAL": 3,
+    "TRADITIONAL": 7
+  },
+  "metadata": {
+    "pattern_threshold": 1.5,
+    "neural_available": true,
+    "total_cases": 10,
+    "successful_cases": 10,
+    "traditional_baseline": 0.4755,
+    "neural_baseline": 0.5466
+  }
+}

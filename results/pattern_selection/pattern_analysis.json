@@ -1,0 +1,219 @@
+{
+  "pattern_classifications": {
+    "store_49_family_PET SUPPLIES": {
+      "store_nbr": 49,
+      "family": "PET SUPPLIES",
+      "coefficient_variation": 1.0381995264796309,
+      "pattern_type": "REGULAR",
+      "confidence_score": 0.30786698234691273,
+      "zero_sales_percentage": 40.415140415140414,
+      "seasonal_strength": 0.09590269442116918,
+      "trend_strength": 0.001692793100926874,
+      "raw_metrics": {
+        "mean_sales": 10.003052503052503,
+        "std_sales": 10.385164372019995,
+        "min_sales": 0.0,
+        "max_sales": 59.0,
+        "median_sales": 9.0,
+        "skewness": 0.7628597576727328,
+        "kurtosis": -0.0856912579675595,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_8_family_PET SUPPLIES": {
+      "store_nbr": 8,
+      "family": "PET SUPPLIES",
+      "coefficient_variation": 1.0135318407400948,
+      "pattern_type": "REGULAR",
+      "confidence_score": 0.3243121061732701,
+      "zero_sales_percentage": 40.476190476190474,
+      "seasonal_strength": 0.12128600309011549,
+      "trend_strength": 0.0015352337588078356,
+      "raw_metrics": {
+        "mean_sales": 9.84859584859585,
+        "std_sales": 9.981865479132608,
+        "min_sales": 0.0,
+        "max_sales": 51.0,
+        "median_sales": 9.0,
+        "skewness": 0.7146148160050038,
+        "kurtosis": -0.1114768391955332,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_44_family_SCHOOL AND OFFICE SUPPLIES": {
+      "store_nbr": 44,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "coefficient_variation": 2.7657115555709066,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.45764409271871254,
+      "zero_sales_percentage": 41.08669108669108,
+      "seasonal_strength": 0.19139181558051824,
+      "trend_strength": 0.0013030362860815636,
+      "raw_metrics": {
+        "mean_sales": 14.072039072039072,
+        "std_sales": 38.91920107198376,
+        "min_sales": 0.0,
+        "max_sales": 609.0,
+        "median_sales": 5.0,
+        "skewness": 6.774155421347753,
+        "kurtosis": 64.22807214099603,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_45_family_SCHOOL AND OFFICE SUPPLIES": {
+      "store_nbr": 45,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "coefficient_variation": 3.074216627029071,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.5120708193392335,
+      "zero_sales_percentage": 41.57509157509158,
+      "seasonal_strength": 0.22599945861155124,
+      "trend_strength": 0.0011134645796206778,
+      "raw_metrics": {
+        "mean_sales": 9.883394383394384,
+        "std_sales": 30.38369534491675,
+        "min_sales": 0.0,
+        "max_sales": 525.0,
+        "median_sales": 3.0,
+        "skewness": 8.464924348210626,
+        "kurtosis": 100.95511309835236,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_39_family_MEATS": {
+      "store_nbr": 39,
+      "family": "MEATS",
+      "coefficient_variation": 9.324833795587587,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.8391392240460324,
+      "zero_sales_percentage": 0.3052503052503053,
+      "seasonal_strength": 0.8314291312777258,
+      "trend_strength": 0.0011503786151970134,
+      "raw_metrics": {
+        "mean_sales": 241.6623352319902,
+        "std_sales": 2253.461110691879,
+        "min_sales": 0.0,
+        "max_sales": 89576.36,
+        "median_sales": 136.2609,
+        "skewness": 38.14941300041371,
+        "kurtosis": 1509.6553674973475,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_53_family_PRODUCE": {
+      "store_nbr": 53,
+      "family": "PRODUCE",
+      "coefficient_variation": 1.054317854684883,
+      "pattern_type": "REGULAR",
+      "confidence_score": 0.297121430210078,
+      "zero_sales_percentage": 33.150183150183146,
+      "seasonal_strength": 0.05085487928259505,
+      "trend_strength": 0.00176807304370615,
+      "raw_metrics": {
+        "mean_sales": 1080.3271815018315,
+        "std_sales": 1139.0082363587774,
+        "min_sales": 0.0,
+        "max_sales": 4876.91,
+        "median_sales": 1029.998,
+        "skewness": 0.6994541548985566,
+        "kurtosis": -0.33633396070111843,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_26_family_FROZEN FOODS": {
+      "store_nbr": 26,
+      "family": "FROZEN FOODS",
+      "coefficient_variation": 2.8817136814801283,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.47947639293937133,
+      "zero_sales_percentage": 0.3052503052503053,
+      "seasonal_strength": 0.15198596566226108,
+      "trend_strength": 0.00031396495829117923,
+      "raw_metrics": {
+        "mean_sales": 78.61433397039072,
+        "std_sales": 226.54400176292296,
+        "min_sales": 0.0,
+        "max_sales": 3437.596,
+        "median_sales": 36.105000000000004,
+        "skewness": 8.173127172763008,
+        "kurtosis": 82.78224064683693,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_46_family_SCHOOL AND OFFICE SUPPLIES": {
+      "store_nbr": 46,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "coefficient_variation": 3.13949810625087,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.5222166253219143,
+      "zero_sales_percentage": 42.246642246642246,
+      "seasonal_strength": 0.25809308233494116,
+      "trend_strength": 0.001158812528373349,
+      "raw_metrics": {
+        "mean_sales": 9.027472527472527,
+        "std_sales": 28.341732904231755,
+        "min_sales": 0.0,
+        "max_sales": 414.0,
+        "median_sales": 2.0,
+        "skewness": 8.55936680360617,
+        "kurtosis": 95.63063263183771,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_47_family_SCHOOL AND OFFICE SUPPLIES": {
+      "store_nbr": 47,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "coefficient_variation": 2.364729964818854,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.36567810180605337,
+      "zero_sales_percentage": 42.185592185592185,
+      "seasonal_strength": 0.18372764081735618,
+      "trend_strength": 0.0011942839257765776,
+      "raw_metrics": {
+        "mean_sales": 7.567155067155067,
+        "std_sales": 17.894278335732412,
+        "min_sales": 0.0,
+        "max_sales": 244.0,
+        "median_sales": 3.0,
+        "skewness": 6.105404263769471,
+        "kurtosis": 50.11717343645531,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    },
+    "store_48_family_SCHOOL AND OFFICE SUPPLIES": {
+      "store_nbr": 48,
+      "family": "SCHOOL AND OFFICE SUPPLIES",
+      "coefficient_variation": 4.293071337817077,
+      "pattern_type": "VOLATILE",
+      "confidence_score": 0.6505997962841414,
+      "zero_sales_percentage": 42.97924297924298,
+      "seasonal_strength": 0.2612206115967485,
+      "trend_strength": 0.0012302435189008314,
+      "raw_metrics": {
+        "mean_sales": 12.738095238095237,
+        "std_sales": 54.68555156505085,
+        "min_sales": 0.0,
+        "max_sales": 1217.0,
+        "median_sales": 2.0,
+        "skewness": 11.089778146676128,
+        "kurtosis": 178.8659033662982,
+        "train_length": 1638,
+        "test_length": 46
+      }
+    }
+  },
+  "threshold_used": 1.5,
+  "classification_summary": {
+    "regular_count": 3,
+    "volatile_count": 7
+  }
+}

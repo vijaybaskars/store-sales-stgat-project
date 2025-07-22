@@ -1,0 +1,20 @@
+{
+  "model_selection": {
+    "pattern_threshold": 1.5,
+    "classification_method": "coefficient_of_variation",
+    "routing_rules": {
+      "regular_patterns": "neural_models",
+      "volatile_patterns": "traditional_models"
+    }
+  },
+  "performance_benchmarks": {
+    "traditional_baseline": 0.4755,
+    "neural_baseline": 0.5466,
+    "adaptive_average": 0.41553255082248486
+  },
+  "validation_results": {
+    "success_rate_traditional": 60.0,
+    "success_rate_neural": 80.0,
+    "average_improvement": 12.611450931128312
+  }
+}

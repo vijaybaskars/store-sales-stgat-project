@@ -6,5 +6,10 @@ Production-ready model implementations for store sales forecasting.
 
 from .traditional import TraditionalBaselines, ModelResults
 from .optimized_lstm import OptimizedLSTMModel, Phase35LSTMTrainer
+from .pattern_selection import PatternBasedSelector, PatternAnalysis, AdaptiveResults
 
-__all__ = ['TraditionalBaselines', 'ModelResults', 'OptimizedLSTMModel', 'Phase35LSTMTrainer' ]
+__all__ = [
+    'TraditionalBaselines', 'ModelResults',
+    'OptimizedLSTMModel', 'Phase35LSTMTrainer',
+    'PatternBasedSelector', 'PatternAnalysis', 'AdaptiveResults'
+]
