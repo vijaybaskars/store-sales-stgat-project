@@ -96,16 +96,26 @@ class PatternBasedSelector:
         # Initialize model evaluators
         self.traditional_evaluator = TraditionalBaselines(evaluation_case_manager)
         
-        if NEURAL_AVAILABLE:
+        # Check both global availability and configuration setting
+        from serving.config import config
+        neural_enabled = NEURAL_AVAILABLE and config.enable_neural_models
+        
+        if neural_enabled:
             self.neural_evaluator = NeuralBaselines(evaluation_case_manager)
             print("✅ Pattern-Based Selector initialized with Neural + Traditional models")
         else:
             self.neural_evaluator = None
-            print("✅ Pattern-Based Selector initialized with Traditional models only")
+            if not config.enable_neural_models:
+                print("⚠️  Neural models disabled in configuration - using Traditional models only")
+            else:
+                print("✅ Pattern-Based Selector initialized with Traditional models only")
         
         print(f"   Pattern threshold: CV = {pattern_threshold}")
-        print(f"   REGULAR patterns (CV < {pattern_threshold}) → Neural models")
-        print(f"   VOLATILE patterns (CV ≥ {pattern_threshold}) → Traditional models")
+        if neural_enabled:
+            print(f"   REGULAR patterns (CV < {pattern_threshold}) → Neural models")
+            print(f"   VOLATILE patterns (CV ≥ {pattern_threshold}) → Traditional models")
+        else:
+            print(f"   ALL patterns → Traditional models (neural disabled)")
     
     def analyze_pattern(self, store_nbr: int, family: str) -> PatternAnalysis:
         """
@@ -222,13 +232,13 @@ class PatternBasedSelector:
         """
         
         # Simple rule-based selection
-        if pattern_analysis.pattern_type == "REGULAR" and NEURAL_AVAILABLE:
+        if pattern_analysis.pattern_type == "REGULAR" and NEURAL_AVAILABLE and self.neural_evaluator is not None:
             return "NEURAL"
         else:
             return "TRADITIONAL"
     
     def evaluate_case_adaptive(self, store_nbr: int, family: str, 
-                              forecast_horizon: int = 15) -> Optional[AdaptiveResults]:
+                              forecast_horizon: int = 15, fast_mode: bool = False, production_mode: bool = True) -> Optional[AdaptiveResults]:
         """
         Evaluate single case using adaptive model selection
         
@@ -236,47 +246,70 @@ class PatternBasedSelector:
             store_nbr: Store number
             family: Product family
             forecast_horizon: Prediction horizon
+            fast_mode: Use faster training parameters for neural models
+            production_mode: Use only top 2 research-validated models per branch
             
         Returns:
             AdaptiveResults with comprehensive evaluation
         """
         
         print(f"\n🎯 Adaptive Evaluation: Store {store_nbr} - {family}")
+        if production_mode:
+            print("   🏭 Production mode: Using research-validated top 2 models")
         start_time = time.time()
         
         try:
             # Step 1: Analyze pattern
             pattern_analysis = self.analyze_pattern(store_nbr, family)
             
+            # Add research-backed confidence information
+            from serving.research_config import get_routing_confidence, get_expected_performance
+            routing_confidence = get_routing_confidence(pattern_analysis.coefficient_variation)
+            expected_perf = get_expected_performance(pattern_analysis.pattern_type)
+            
+            print(f"   📊 Pattern: {pattern_analysis.pattern_type} (CV: {pattern_analysis.coefficient_variation:.3f})")
+            print(f"   🎯 Routing confidence: {routing_confidence:.1%}")
+            print(f"   📈 Expected RMSLE: {expected_perf['expected_rmsle']:.4f} (±{1-expected_perf['confidence']:.2f})")
+            
             # Step 2: Select optimal model
             selected_model_type = self.select_optimal_model(pattern_analysis)
             
             print(f"   Selected: {selected_model_type} model")
+            if fast_mode:
+                print(f"   ⚡ Fast mode enabled - using optimized training parameters")
             
             # Step 3: Run evaluation with selected model
             if selected_model_type == "NEURAL" and self.neural_evaluator:
-                case_results = self.neural_evaluator.evaluate_case(store_nbr, family, forecast_horizon)
-                
-                # Get best neural result
-                if case_results:
-                    best_result = min(case_results.items(), key=lambda x: x[1].test_rmsle)
-                    selected_model_name, result = best_result
+                try:
+                    print(f"   🧠 Running neural evaluation...")
+                    case_results = self.neural_evaluator.evaluate_case(store_nbr, family, forecast_horizon, fast_mode=fast_mode, production_mode=production_mode)
                     
-                    # Convert to compatible format
-                    test_rmsle = result.test_rmsle
-                    test_mae = result.test_mae
-                    test_mape = result.test_mape
-                    predictions = result.predictions
-                    actuals = result.actuals
-                    model_params = result.model_params
-                    model_fit_time = result.fit_time
-                else:
-                    print("   ❌ Neural evaluation failed - falling back to traditional")
+                    # Get best neural result
+                    if case_results:
+                        best_result = min(case_results.items(), key=lambda x: x[1].test_rmsle)
+                        selected_model_name, result = best_result
+                        
+                        # Convert to compatible format
+                        test_rmsle = result.test_rmsle
+                        test_mae = result.test_mae
+                        test_mape = result.test_mape
+                        predictions = result.predictions
+                        actuals = result.actuals
+                        model_params = result.model_params
+                        model_fit_time = result.fit_time
+                        print(f"   ✅ Neural model completed: {selected_model_name} (RMSLE: {test_rmsle:.4f})")
+                    else:
+                        print("   ❌ Neural evaluation returned empty results - falling back to traditional")
+                        selected_model_type = "TRADITIONAL"
+                        case_results = None
+                except Exception as neural_error:
+                    print(f"   ❌ Neural evaluation crashed: {neural_error}")
+                    print("   🔄 Falling back to traditional models...")
                     selected_model_type = "TRADITIONAL"
                     case_results = None
             
             if selected_model_type == "TRADITIONAL" or not case_results:
-                case_results = self.traditional_evaluator.evaluate_case(store_nbr, family, forecast_horizon)
+                case_results = self.traditional_evaluator.evaluate_case(store_nbr, family, forecast_horizon, production_mode=production_mode)
                 
                 if case_results:
                     # Get best traditional result
@@ -331,7 +364,10 @@ class PatternBasedSelector:
             return adaptive_result
             
         except Exception as e:
-            print(f"   ❌ Adaptive evaluation failed: {e}")
+            print(f"   ❌ Adaptive evaluation failed: {type(e).__name__}: {e}")
+            print(f"   📍 Error occurred during pattern analysis or model evaluation for Store {store_nbr}, Family {family}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def evaluate_all_cases(self, evaluation_cases: List[Dict]) -> Dict:

@@ -30,7 +30,10 @@ class Phase6Config:
         
         # Model configuration
         self.pattern_threshold = 1.5  # CV threshold for model routing
-        self.forecast_horizon = 5
+        self.forecast_horizon = 15  # Default forecast horizon (can be overridden by API requests)
+        
+        # Emergency neural model bypass (set to False to disable neural models)
+        self.enable_neural_models = False  # Temporarily disabled due to segfaults
         
         # Performance baselines (from Phase 2 & 3)
         self.traditional_baseline = 0.4755

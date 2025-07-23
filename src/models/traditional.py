@@ -330,10 +330,18 @@ class TraditionalBaselines:
         
         return results
     
-    def evaluate_case(self, store_nbr: int, family: str, forecast_horizon: int = 15) -> Dict[str, ModelResults]:
-        """Evaluate all models for a single store-family case using existing infrastructure"""
+    def evaluate_case(self, store_nbr: int, family: str, forecast_horizon: int = 15, production_mode: bool = True) -> Dict[str, ModelResults]:
+        """
+        Evaluate models for a single store-family case
         
-        print(f"\nEvaluating Store {store_nbr} - {family}")
+        Args:
+            production_mode: If True, use only top 2 research-validated models (Phase 6 optimization)
+                           If False, use all models for research purposes
+        """
+        
+        print(f"\n📊 Traditional Models Evaluation: Store {store_nbr} - {family}")
+        if production_mode:
+            print("  ⚡ Production mode: Using top 2 research-validated models")
         
         # Use existing data preparation infrastructure
         train_series, test_series = self.prepare_case_data(store_nbr, family)
@@ -345,94 +353,103 @@ class TraditionalBaselines:
         test_actual = test_series.iloc[:forecast_horizon].values
         case_results = {}
         
-        # 1. ARIMA
-        print("  📊 Fitting ARIMA...")
-        arima_result = self.fit_arima(train_series, forecast_horizon)
-        if arima_result:
-            arima_pred = arima_result['forecast'][:forecast_horizon]
-            # Handle train predictions length mismatch
-            train_pred_vals = arima_result['train_predictions'].values
-            if len(train_pred_vals) != len(train_series):
-                train_pred_vals = train_pred_vals[-len(train_series):]
-            
-            train_metrics = self.calculate_metrics(train_series.values, train_pred_vals)
-            test_metrics = self.calculate_metrics(test_actual, arima_pred)
-            
-            case_results['arima'] = ModelResults(
-                model_name='ARIMA',
-                store_nbr=store_nbr,
-                family=family,
-                train_rmsle=train_metrics['rmsle'],
-                test_rmsle=test_metrics['rmsle'],
-                test_mae=test_metrics['mae'],
-                test_mape=test_metrics['mape'],
-                predictions=arima_pred.tolist(),
-                actuals=test_actual.tolist(),
-                model_params=arima_result['params'],
-                fit_time=arima_result['fit_time']
-            )
-            print(f"    ✅ ARIMA - Test RMSLE: {test_metrics['rmsle']:.4f}")
+        # Import research configuration for production mode
+        if production_mode:
+            from serving.research_config import get_top_models_for_pattern
+            top_models = ["exponential_smoothing", "arima"]  # Research-validated top 2
+            print(f"  🎯 Training top models: {top_models}")
         
-        # 2. Exponential Smoothing
-        print("  📈 Fitting Exponential Smoothing...")
-        exp_result = self.fit_exponential_smoothing(train_series, forecast_horizon)
-        if exp_result:
-            exp_pred = exp_result['forecast'][:forecast_horizon]
-            train_metrics = self.calculate_metrics(train_series.values, exp_result['train_predictions'].values)
-            test_metrics = self.calculate_metrics(test_actual, exp_pred)
-            
-            case_results['exponential_smoothing'] = ModelResults(
-                model_name='Exponential_Smoothing',
-                store_nbr=store_nbr,
-                family=family,
-                train_rmsle=train_metrics['rmsle'],
-                test_rmsle=test_metrics['rmsle'],
-                test_mae=test_metrics['mae'],
-                test_mape=test_metrics['mape'],
-                predictions=exp_pred.tolist(),
-                actuals=test_actual.tolist(),
-                model_params=exp_result['params'],
-                fit_time=exp_result['fit_time']
-            )
-            print(f"    ✅ Exp Smoothing - Test RMSLE: {test_metrics['rmsle']:.4f}")
-        
-        # 3. Simple Baselines
-        print("  📋 Fitting Simple Baselines...")
-        simple_results = self.fit_simple_baselines(train_series, forecast_horizon)
-        
-        for name, result in simple_results.items():
-            pred = result['forecast'][:forecast_horizon]
-            if isinstance(result['train_predictions'], pd.Series):
-                train_pred = result['train_predictions'].values
-            else:
-                train_pred = result['train_predictions']
-            
-            # Handle train predictions with NaN values
-            train_pred_clean = train_pred[-len(train_series):]
-            train_pred_clean = train_pred_clean[~np.isnan(train_pred_clean)]
-            train_actual_clean = train_series.values[-len(train_pred_clean):]
-            
-            if len(train_pred_clean) > 0:
-                train_metrics = self.calculate_metrics(train_actual_clean, train_pred_clean)
-            else:
-                train_metrics = {'rmsle': float('inf'), 'mae': float('inf'), 'mape': float('inf')}
+        # 1. Exponential Smoothing (Research-validated #1 performer)
+        if not production_mode or "exponential_smoothing" in top_models:
+            print("  📈 Fitting Exponential Smoothing...")
+            exp_result = self.fit_exponential_smoothing(train_series, forecast_horizon)
+            if exp_result:
+                exp_pred = exp_result['forecast'][:forecast_horizon]
+                train_metrics = self.calculate_metrics(train_series.values, exp_result['train_predictions'].values)
+                test_metrics = self.calculate_metrics(test_actual, exp_pred)
                 
-            test_metrics = self.calculate_metrics(test_actual, pred)
+                case_results['exponential_smoothing'] = ModelResults(
+                    model_name='Exponential_Smoothing',
+                    store_nbr=store_nbr,
+                    family=family,
+                    train_rmsle=train_metrics['rmsle'],
+                    test_rmsle=test_metrics['rmsle'],
+                    test_mae=test_metrics['mae'],
+                    test_mape=test_metrics['mape'],
+                    predictions=exp_pred.tolist(),
+                    actuals=test_actual.tolist(),
+                    model_params=exp_result['params'],
+                    fit_time=exp_result['fit_time']
+                )
+                print(f"    ✅ Exp Smoothing - Test RMSLE: {test_metrics['rmsle']:.4f}")
+        
+        # 2. ARIMA (Research-validated #2 performer)
+        if not production_mode or "arima" in top_models:
+            print("  📊 Fitting ARIMA...")
+            arima_result = self.fit_arima(train_series, forecast_horizon)
+            if arima_result:
+                arima_pred = arima_result['forecast'][:forecast_horizon]
+                # Handle train predictions length mismatch
+                train_pred_vals = arima_result['train_predictions'].values
+                if len(train_pred_vals) != len(train_series):
+                    train_pred_vals = train_pred_vals[-len(train_series):]
+                
+                train_metrics = self.calculate_metrics(train_series.values, train_pred_vals)
+                test_metrics = self.calculate_metrics(test_actual, arima_pred)
+                
+                case_results['arima'] = ModelResults(
+                    model_name='ARIMA',
+                    store_nbr=store_nbr,
+                    family=family,
+                    train_rmsle=train_metrics['rmsle'],
+                    test_rmsle=test_metrics['rmsle'],
+                    test_mae=test_metrics['mae'],
+                    test_mape=test_metrics['mape'],
+                    predictions=arima_pred.tolist(),
+                    actuals=test_actual.tolist(),
+                    model_params=arima_result['params'],
+                    fit_time=arima_result['fit_time']
+                )
+                print(f"    ✅ ARIMA - Test RMSLE: {test_metrics['rmsle']:.4f}")
+        
+        # Skip simple baselines in production mode (research showed they underperform)
+        if not production_mode:
+            print("  📋 Fitting Simple Baselines...")
+            simple_results = self.fit_simple_baselines(train_series, forecast_horizon)
             
-            case_results[name] = ModelResults(
-                model_name=name,
-                store_nbr=store_nbr,
-                family=family,
-                train_rmsle=train_metrics['rmsle'],
-                test_rmsle=test_metrics['rmsle'],
-                test_mae=test_metrics['mae'],
-                test_mape=test_metrics['mape'],
-                predictions=pred,
-                actuals=test_actual.tolist(),
-                model_params=result['params'],
-                fit_time=result['fit_time']
-            )
-            print(f"    ✅ {name} - Test RMSLE: {test_metrics['rmsle']:.4f}")
+            for name, result in simple_results.items():
+                pred = result['forecast'][:forecast_horizon]
+                if isinstance(result['train_predictions'], pd.Series):
+                    train_pred = result['train_predictions'].values
+                else:
+                    train_pred = result['train_predictions']
+                
+                # Handle train predictions with NaN values
+                train_pred_clean = train_pred[-len(train_series):]
+                train_pred_clean = train_pred_clean[~np.isnan(train_pred_clean)]
+                train_actual_clean = train_series.values[-len(train_pred_clean):]
+                
+                if len(train_pred_clean) > 0:
+                    train_metrics = self.calculate_metrics(train_actual_clean, train_pred_clean)
+                else:
+                    train_metrics = {'rmsle': float('inf'), 'mae': float('inf'), 'mape': float('inf')}
+                    
+                test_metrics = self.calculate_metrics(test_actual, pred)
+                
+                case_results[name] = ModelResults(
+                    model_name=name,
+                    store_nbr=store_nbr,
+                    family=family,
+                    train_rmsle=train_metrics['rmsle'],
+                    test_rmsle=test_metrics['rmsle'],
+                    test_mae=test_metrics['mae'],
+                    test_mape=test_metrics['mape'],
+                    predictions=pred,
+                    actuals=test_actual.tolist(),
+                        model_params=result['params'],
+                    fit_time=result['fit_time']
+                )
+                print(f"    ✅ {name} - Test RMSLE: {test_metrics['rmsle']:.4f}")
         
         return case_results
     

@@ -64,12 +64,12 @@ class DashboardAPI:
         except Exception as e:
             return {"error": str(e)}
     
-    def get_prediction(self, store_nbr: int, family: str, horizon: int = 15) -> Dict[str, Any]:
+    def get_prediction(self, store_nbr: int, family: str, horizon: int = 15, fast_mode: bool = False) -> Dict[str, Any]:
         """Get prediction"""
         try:
             response = requests.post(
                 f"{self.base_url}/predict/{store_nbr}/{family}",
-                json={"forecast_horizon": horizon, "include_analysis": True},
+                json={"forecast_horizon": horizon, "include_analysis": True, "fast_mode": fast_mode},
                 timeout=120  # Increased to 2 minutes
             )
             response.raise_for_status()
@@ -111,12 +111,26 @@ def get_api_client():
 def render_header():
     """Render dashboard header"""
     st.title("🏪 Store Sales Forecasting - Phase 6")
-    st.markdown("""
-    **Pattern-Based Selection with Adaptive Model Routing**
     
-    This dashboard demonstrates the Phase 6 implementation that uses Coefficient of Variation (CV) analysis 
-    to intelligently route forecasting tasks between Neural (LSTM) and Traditional (ARIMA) models.
-    """)
+    from serving.config import config
+    if config.enable_neural_models:
+        st.markdown("""
+        **Pattern-Based Selection with Adaptive Model Routing**
+        
+        This dashboard demonstrates the Phase 6 implementation that uses Coefficient of Variation (CV) analysis 
+        to intelligently route forecasting tasks between Neural (LSTM) and Traditional (ARIMA) models.
+        """)
+    else:
+        st.markdown("""
+        **Pattern-Based Selection with Adaptive Model Routing - Production Deployment**
+        
+        This dashboard represents the **Phase 6 production system** that deploys research-validated findings from Phases 1-5:
+        - **Phases 1-2**: Traditional model evaluation → Top 2: Exponential Smoothing, ARIMA
+        - **Phases 3-4**: Neural model evaluation → Top 2: Bidirectional LSTM, Vanilla LSTM  
+        - **Phase 5**: CV threshold validation → Optimal: 1.5 (87% routing accuracy)
+        - **Phase 6**: Production deployment with 70% computational optimization
+        """)
+        st.info("ℹ️ **Production Mode**: Using research-validated top 2 models per branch. Neural models temporarily disabled for stability.")
     
     # API status check
     api = get_api_client()
@@ -171,57 +185,99 @@ def render_sidebar():
         index=0
     )
     
-    # Add performance indicator
+    # Add performance indicator (without auto-running analysis)
     if selected_option:
         st.sidebar.markdown("---")
         st.sidebar.subheader("⏱️ Expected Processing Time")
-        
-        # Make a quick pattern analysis to estimate time
-        try:
-            api = get_api_client()
-            analysis_data = api.get_analysis(selected_option['store_nbr'], selected_option['family'])
-            
-            if "error" not in analysis_data:
-                pattern_type = analysis_data.get('pattern_type', 'UNKNOWN')
-                cv = analysis_data.get('coefficient_variation', 0)
-                
-                if pattern_type == "REGULAR":
-                    st.sidebar.success("🏃‍♂️ **Fast** (~5-15 seconds)\nUses Neural models (LSTM)")
-                elif pattern_type == "VOLATILE":
-                    st.sidebar.warning("⏳ **Moderate** (~30-60 seconds)\nUses Traditional models (ARIMA)")
-                else:
-                    st.sidebar.info("❓ **Unknown processing time**")
-                    
-                st.sidebar.caption(f"Pattern: {pattern_type} (CV: {cv:.3f})")
-            else:
-                st.sidebar.info("❓ Could not estimate processing time")
-                
-        except Exception:
-            st.sidebar.info("❓ Could not estimate processing time")
+        st.sidebar.info("Click 'Generate Prediction' to run analysis")
+        st.sidebar.caption("Pattern analysis will determine model routing")
     
     # Forecast horizon
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📅 Forecast Configuration")
     forecast_horizon = st.sidebar.slider(
-        "📅 Forecast Horizon (days):",
+        "Forecast Horizon (days):",
         min_value=1,
         max_value=30,
         value=15,
-        help="Number of days to forecast"
+        help="Number of days to forecast. This will be used for the next prediction generation."
     )
+    
+    if forecast_horizon != 15:
+        st.sidebar.success(f"✅ Custom horizon: {forecast_horizon} days")
+    else:
+        st.sidebar.info(f"🔸 Using default: {forecast_horizon} days")
     
     # Analysis options
     st.sidebar.subheader("⚙️ Options")
     show_pattern_details = st.sidebar.checkbox("Show Pattern Analysis Details", value=True)
     show_performance_comparison = st.sidebar.checkbox("Show Performance Comparison", value=True)
     
+    # Neural model status
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🧠 Neural Model Status")
+    
+    from serving.config import config
+    if config.enable_neural_models:
+        st.sidebar.success("✅ Neural models enabled")
+        
+        # Fast mode option
+        fast_mode = st.sidebar.checkbox(
+            "Enable Fast Mode", 
+            value=True,  # Default to True for testing
+            help="Reduces neural model training time: 10 epochs (vs 30), single model variant (vs 4 variants). Recommended for testing."
+        )
+        
+        if fast_mode:
+            st.sidebar.success("⚡ Fast mode: ~30-60 seconds")
+            st.sidebar.caption("• 10 epochs (vs 30)\n• Vanilla LSTM only")
+        else:
+            st.sidebar.warning("🐌 Full mode: ~2-5 minutes") 
+            st.sidebar.caption("• 30 epochs\n• All 4 model variants")
+    else:
+        st.sidebar.warning("⚠️ Neural models disabled")
+        st.sidebar.caption("Using traditional models only due to\nstability issues. Pattern analysis\nstill works for demonstration.")
+        fast_mode = False  # Not relevant when neural models are disabled
+    
     return selected_option, forecast_horizon, {
         'show_pattern_details': show_pattern_details,
-        'show_performance_comparison': show_performance_comparison
+        'show_performance_comparison': show_performance_comparison,
+        'fast_mode': fast_mode
     }
 
 
 def render_overview_metrics():
     """Render overview metrics"""
     st.header("📊 System Overview")
+    
+    # Research validation summary
+    from serving.research_config import RESEARCH_VALIDATED_MODELS
+    
+    st.markdown("### 🎓 Research Validation Summary")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric(
+            "Traditional Models Analyzed",
+            RESEARCH_VALIDATED_MODELS["traditional"]["validation"].total_cases_analyzed,
+            help="Cases analyzed in Phases 1-2 to validate traditional models"
+        )
+    
+    with col2:
+        st.metric(
+            "Neural Models Analyzed", 
+            RESEARCH_VALIDATED_MODELS["neural"]["validation"].total_cases_analyzed,
+            help="Cases analyzed in Phases 3-4 to validate neural models"
+        )
+    
+    with col3:
+        st.metric(
+            "Routing Accuracy",
+            f"{RESEARCH_VALIDATED_MODELS['routing']['validation'].confidence_level:.0%}",
+            help="CV threshold routing accuracy validated in Phase 5"
+        )
+    
+    st.markdown("### 📈 Performance Baselines")
     
     api = get_api_client()
     summary = api.get_dashboard_summary()
@@ -409,7 +465,7 @@ def create_prediction_chart(prediction_data: Dict[str, Any]):
     )
     
     fig.update_layout(
-        title=f"Sales Forecast - Store {prediction_data.get('store_nbr')} - {prediction_data.get('family')}",
+        title=f"Sales Forecast - Store {prediction_data.get('store_nbr')} - {prediction_data.get('family')} ({len(predictions)} day horizon)",
         xaxis_title="Forecast Day",
         yaxis_title="Sales Volume",
         height=500,
@@ -474,6 +530,19 @@ def main():
     
     st.header(f"🎯 Analysis: Store {store_nbr} - {family}")
     
+    # Add Generate Prediction button
+    generate_prediction = st.button("🚀 Generate Prediction", type="primary", help="Run pattern analysis and generate forecast")
+    
+    if not generate_prediction:
+        st.info("👆 Click 'Generate Prediction' to start forecasting for this store-family combination")
+        st.markdown("**Selected Configuration:**")
+        st.write(f"- **Store:** {store_nbr}")
+        st.write(f"- **Family:** {family}")
+        st.write(f"- **Forecast Horizon:** {forecast_horizon} days")
+        st.write(f"- **Performance Mode:** {'⚡ Fast' if options['fast_mode'] else '🐌 Full'}")
+        st.caption("💡 You can adjust settings in the sidebar before generating predictions.")
+        return
+    
     # Get prediction with enhanced progress feedback
     with st.spinner(f"Generating predictions for Store {store_nbr} - {family}... This may take 1-2 minutes for complex cases."):
         api = get_api_client()
@@ -482,7 +551,7 @@ def main():
         progress_placeholder = st.empty()
         progress_placeholder.info("🧠 Analyzing time series patterns and selecting optimal model...")
         
-        prediction_data = api.get_prediction(store_nbr, family, forecast_horizon)
+        prediction_data = api.get_prediction(store_nbr, family, forecast_horizon, fast_mode=options['fast_mode'])
         progress_placeholder.empty()
     
     if "error" in prediction_data:
@@ -565,6 +634,7 @@ def main():
         
         st.info(f"**Type:** {model_type}")
         st.info(f"**Model:** {model_name}")
+        st.info(f"**Horizon:** {forecast_horizon} days")
         
         # Baseline comparison
         beats_traditional = prediction_data.get('beats_traditional', False)

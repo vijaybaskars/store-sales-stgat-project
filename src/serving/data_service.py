@@ -125,8 +125,9 @@ class Phase6DataService:
             if fast_mode:
                 logger.info("Using fast mode - simplified model training")
             
+            # Pass fast_mode and production_mode to pattern selector for optimization
             result = self.pattern_selector.evaluate_case_adaptive(
-                store_nbr, family, forecast_horizon
+                store_nbr, family, forecast_horizon, fast_mode=fast_mode, production_mode=True
             )
             
             if result is None:

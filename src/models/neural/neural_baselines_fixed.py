@@ -543,20 +543,44 @@ class NeuralBaselines:
             'epochs_trained': len(train_losses)
         }
     
-    def evaluate_case(self, store_nbr: int, family: str, forecast_horizon: int = 15) -> Dict[str, NeuralModelResults]:
-        """FIXED: Evaluate all neural models for a single case"""
+    def evaluate_case(self, store_nbr: int, family: str, forecast_horizon: int = 15, fast_mode: bool = False, production_mode: bool = True) -> Dict[str, NeuralModelResults]:
+        """
+        Evaluate neural models for a single case
+        
+        Args:
+            production_mode: If True, use only top 2 research-validated models (Phase 6 optimization)
+            fast_mode: If True, use reduced epochs and faster training
+        """
         
         print(f"\n🧠 Neural Evaluation: Store {store_nbr} - {family}")
+        if production_mode:
+            print("   ⚡ Production mode: Using top 2 research-validated models")
+        if fast_mode:
+            print("   ⚡ Fast mode enabled - using reduced epochs and simplified training")
         
         case_results = {}
         
-        # Models to test
-        models_to_test = {
-            'vanilla_lstm': (VanillaLSTM, False),
-            'bidirectional_lstm': (BidirectionalLSTM, False),
-            'gru': (GRUModel, False),
-            'lstm_with_features': (LSTMWithFeatures, True)
-        }
+        # Models to test based on mode
+        if production_mode:
+            # Research-validated top 2 performers: bidirectional_lstm (#1), vanilla_lstm (#2)
+            models_to_test = {
+                'bidirectional_lstm': (BidirectionalLSTM, False),  # Research #1 performer
+                'vanilla_lstm': (VanillaLSTM, False)                # Research #2 performer
+            }
+            print(f"   🎯 Training top models: {list(models_to_test.keys())}")
+        elif fast_mode:
+            # Fast mode: only simplest model
+            models_to_test = {
+                'vanilla_lstm': (VanillaLSTM, False)  # Only test the simplest/fastest model
+            }
+        else:
+            # Research mode: all models
+            models_to_test = {
+                'vanilla_lstm': (VanillaLSTM, False),
+                'bidirectional_lstm': (BidirectionalLSTM, False),
+                'gru': (GRUModel, False),
+                'lstm_with_features': (LSTMWithFeatures, True)
+            }
         
         for model_name, (model_class, use_features) in models_to_test.items():
             print(f"  🚀 Training {model_name}...")
@@ -622,8 +646,9 @@ class NeuralBaselines:
                         forecast_horizon=forecast_horizon
                     )
                 
-                # Train model
-                training_history = self.train_model(model, train_loader, val_loader, epochs=30)
+                # Train model (use fewer epochs in fast mode)
+                epochs = 10 if fast_mode else 30
+                training_history = self.train_model(model, train_loader, val_loader, epochs=epochs)
                 
                 # Generate predictions
                 model.eval()

@@ -246,6 +246,7 @@ def generate_prediction(store_nbr: int, family: str):
         
         logger.info(f"Generating prediction for store {store_nbr}, family {family}, horizon {forecast_horizon}, fast_mode {fast_mode}")
         
+        # Generate prediction (no signal-based timeout in Flask threads)
         prediction = data_service.generate_prediction(
             store_nbr, family, forecast_horizon, fast_mode
         )
