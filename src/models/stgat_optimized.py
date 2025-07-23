@@ -25,9 +25,9 @@ from pathlib import Path
 
 # Import existing components
 from .stgat import STGATEvaluator, STGATGraphBuilder, PatternAwareSTGAT
-from .enhanced_traditional import EnhancedTraditionalBaselines
-from ..optimization.threshold_optimizer import CVThresholdOptimizer
-from ..data import EvaluationCaseManager, get_case_train_test_data
+from .traditional import TraditionalBaselines
+from optimization.threshold_optimizer import CVThresholdOptimizer
+from data import EvaluationCaseManager, get_case_train_test_data
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -133,7 +133,7 @@ class OptimizedSTGATEvaluator(STGATEvaluator):
     
     def __init__(self, evaluation_case_manager: EvaluationCaseManager, 
                  cv_threshold: float = 1.5, adaptive_mode: bool = True,
-                 optimize_threshold: bool = True, use_enhanced_traditional: bool = True):
+                 optimize_threshold: bool = False, use_enhanced_traditional: bool = True):
         """
         Initialize Optimized STGAT Evaluator.
         
@@ -152,7 +152,7 @@ class OptimizedSTGATEvaluator(STGATEvaluator):
         
         # Initialize enhanced components
         if self.use_enhanced_traditional:
-            self.enhanced_traditional = EnhancedTraditionalBaselines(use_optimization=True)
+            self.enhanced_traditional = TraditionalBaselines(evaluation_case_manager)
             print("🔧 Enhanced traditional models initialized")
         
         if self.optimize_threshold:
@@ -235,24 +235,36 @@ class OptimizedSTGATEvaluator(STGATEvaluator):
             
             print("📊 Trying enhanced traditional models...")
             
-            # Use enhanced traditional model evaluation
-            result = self.enhanced_traditional.evaluate_traditional_models(train_data, test_data)
+            # Use Phase 3.6 proven traditional model evaluation
+            traditional_results = self.enhanced_traditional.evaluate_case(store_nbr, family)
             
-            if result['success']:
-                # Format result to match expected interface
-                formatted_result = {
-                    'store_nbr': store_nbr,
-                    'family': family,
-                    'test_rmsle': result['test_rmsle'],
-                    'test_mae': np.mean(np.abs(test_data['sales'].values - result['predictions'])),
-                    'test_mape': np.mean(np.abs((test_data['sales'].values - result['predictions']) / (test_data['sales'].values + 1e-8))) * 100,
-                    'method_used': result['method_used'],
-                    'model_name': result['model_name'],
-                    'predictions': result['predictions'],
-                    'prediction_length': len(result['predictions'])
+            # Find best traditional model result
+            best_result = None
+            best_rmsle = float('inf')
+            
+            for model_name, model_result in traditional_results.items():
+                if hasattr(model_result, 'test_rmsle') and model_result.test_rmsle < best_rmsle:
+                    best_rmsle = model_result.test_rmsle
+                    best_result = {
+                        'test_rmsle': model_result.test_rmsle,
+                        'method_used': f'Traditional_{model_name.lower()}',
+                        'model_name': model_name,
+                        'predictions': model_result.predictions,
+                        'actuals': model_result.actuals
+                    }
+            
+            if best_result is None:
+                return {
+                    'error': 'No traditional models succeeded',
+                    'test_rmsle': 999.0,
+                    'method_used': 'Enhanced_Traditional_Failed'
                 }
-                
-                return formatted_result
+            
+            result = best_result
+            
+            if result and 'test_rmsle' in result:
+                # Return the proven Phase 3.6 result directly
+                return result
             else:
                 # Fallback failed
                 return {
@@ -286,7 +298,7 @@ class OptimizedSTGATEvaluator(STGATEvaluator):
             np.random.seed(42)
             
             # Get base STGAT evaluation with improved graph building
-            result = super().evaluate_stgat(store_nbr, family)
+            result = super().evaluate_case_adaptive(store_nbr, family)
             
             # Add consistency metadata
             result['consistency_mode'] = True

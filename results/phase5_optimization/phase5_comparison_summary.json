@@ -1,0 +1,16 @@
+{
+  "phase_comparison": {
+    "Traditional\n(Phase 2)": 0.4755,
+    "Neural\n(Phase 3)": 0.5466,
+    "Pattern Selection\n(Phase 3.6)": 0.4189712170375797,
+    "Enhanced STGAT\n(Phase 4)": 0.46110484048173583,
+    "Optimized STGAT\n(Phase 5)": 0.4509641310787768
+  },
+  "optimization_summary": {
+    "cv_threshold_optimized": 1.1,
+    "enhanced_traditional_enabled": true,
+    "consistency_improvements_applied": true,
+    "optimization_success": false
+  },
+  "created_date": "2025-07-23 05:53:52"
+}
