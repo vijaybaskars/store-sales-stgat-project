@@ -1,0 +1,29 @@
+# Neural Model Dependencies for Store Sales Forecasting Project
+# These packages are needed for the STGAT (Spatial-Temporal Graph Attention Network) models
+# Install these ONLY if you plan to use neural models (enable_neural_models = True)
+
+# PyTorch ecosystem (core neural network framework)
+torch==2.2.2
+torchvision==0.17.2
+torchaudio==2.2.2
+
+# PyTorch Geometric (for graph neural networks/STGAT)
+torch-geometric==2.6.1
+
+# PyTorch Lightning (training framework and utilities)
+pytorch-lightning==2.5.2
+lightning-utilities==0.14.3
+torchmetrics==1.7.4
+
+# Additional neural network utilities
+# Note: Some dependencies may be automatically installed by the above packages
+
+# GPU support (CUDA) - uncomment if you have NVIDIA GPU
+# torch==2.2.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# torchvision==0.17.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# torchaudio==2.2.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+
+# CPU-only installation (default above) works on all platforms including Linux servers
+
+# Note: The neural models are currently disabled in production due to stability issues
+# To enable: Set enable_neural_models = True in src/serving/config.py:36

@@ -1,0 +1,49 @@
+# Development Dependencies for Store Sales Forecasting Project
+# These packages are needed for development, testing, and code quality
+
+# Jupyter ecosystem for notebooks and development
+jupyter>=1.0.0,<2.0.0
+jupyterlab>=4.0.0,<5.0.0
+ipykernel>=6.25.0,<7.0.0
+ipywidgets>=8.0.0,<9.0.0
+nbconvert>=7.7.0,<8.0.0
+
+# Testing framework
+pytest>=7.4.0,<8.0.0
+pytest-cov>=4.1.0,<5.0.0
+
+# Code quality and formatting
+black>=23.7.0,<24.0.0
+flake8>=6.0.0,<7.0.0
+isort>=5.12.0,<6.0.0
+mypy>=1.5.0,<2.0.0
+
+# Documentation
+sphinx>=7.1.0,<8.0.0
+
+# Profiling and debugging
+memory-profiler>=0.61.0,<1.0.0
+
+# Data science visualization extras
+bokeh>=3.2.0,<4.0.0
+altair>=5.0.0,<6.0.0
+
+# Additional utilities for development
+python-dotenv>=1.0.0,<2.0.0
+click>=8.1.0,<9.0.0
+
+# Version control integration
+gitpython>=3.1.0,<4.0.0
+
+# Performance monitoring
+psutil>=5.9.0,<6.0.0
+
+# HTTP client for API testing
+httpx>=0.24.0,<1.0.0
+
+# Linting extras
+pylint>=2.17.0,<3.0.0
+
+# Type checking
+types-requests>=2.31.0,<3.0.0
+types-PyYAML>=6.0.0,<7.0.0
