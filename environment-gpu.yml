@@ -1,0 +1,85 @@
+name: store-sales-stgat-gpu
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia  # For CUDA packages
+  - defaults
+
+dependencies:
+  # Python version
+  - python=3.12
+
+  # Core data science packages from conda-forge (most reliable)
+  - pandas>=2.0.0
+  - numpy>=1.24.0
+  - scipy>=1.10.0
+  - scikit-learn>=1.3.0
+  - matplotlib>=3.7.0
+  - seaborn>=0.12.0
+  - statsmodels>=0.14.0
+
+  # Visualization
+  - plotly>=5.15.0
+
+  # Web frameworks
+  - flask>=2.3.0
+
+  # Jupyter ecosystem
+  - jupyter>=1.0.0
+  - jupyterlab>=4.0.0
+  - ipykernel>=6.25.0
+  - ipywidgets>=8.0.0
+
+  # Development tools
+  - pytest>=7.4.0
+  - black>=23.7.0
+
+  # GPU-accelerated PyTorch (NVIDIA CUDA)
+  # Note: Remove these lines and use CPU version if no NVIDIA GPU
+  - pytorch=2.2.2
+  - torchvision=0.17.2
+  - torchaudio=2.2.2
+  - pytorch-cuda=11.8  # CUDA support - replace 'cpuonly' from regular environment
+  - cudatoolkit>=11.8  # CUDA toolkit
+
+  # Utilities (conda-forge)
+  - networkx>=3.1
+  - pyyaml>=6.0
+  - tqdm>=4.65.0
+  - requests>=2.31.0
+
+  # pip for packages not available in conda-forge
+  - pip
+  - pip:
+    # PyTorch Geometric (more reliable via pip)
+    - torch-geometric==2.6.1
+    
+    # Time series and specialized packages
+    - pmdarima>=2.0.0,<3.0.0
+    - streamlit>=1.25.0,<2.0.0
+    
+    # PyTorch Lightning ecosystem (GPU optimized)
+    - pytorch-lightning==2.5.2
+    - lightning-utilities==0.14.3
+    - torchmetrics==1.7.4
+    
+    # Other utilities
+    - pydantic>=2.0.0,<3.0.0
+    - openpyxl>=3.1.0,<4.0.0
+    - python-dateutil>=2.8.0,<3.0.0
+    - coverage>=7.2.0,<8.0.0
+
+# Environment variables (optional)
+variables:
+  - PYTHONPATH: ${CONDA_PREFIX}/src
+  # CUDA environment variables (automatically set by conda)
+  - CUDA_HOME: ${CONDA_PREFIX}
+
+# Usage:
+# 1. Check GPU first: python detect_gpu.py
+# 2. Create environment: conda env create -f environment-gpu.yml
+# 3. Activate environment: conda activate store-sales-stgat-gpu
+# 4. Verify GPU: python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+#
+# Note: Use this ONLY if you have NVIDIA GPU with CUDA support
+# For CPU-only or Apple Silicon, use environment.yml instead

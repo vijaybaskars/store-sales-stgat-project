@@ -2,7 +2,18 @@
 # These packages are needed for the STGAT (Spatial-Temporal Graph Attention Network) models
 # Install these ONLY if you plan to use neural models (enable_neural_models = True)
 
-# PyTorch ecosystem (core neural network framework)
+# ==========================================
+# IMPORTANT: GPU DETECTION RECOMMENDED
+# ==========================================
+# Run this command first to detect your GPU and get optimal installation:
+# python detect_gpu.py
+
+# ==========================================
+# DEFAULT: CPU-ONLY INSTALLATION
+# ==========================================
+# The following packages work on all systems (CPU-only, smaller download)
+
+# PyTorch ecosystem (CPU version)
 torch==2.2.2
 torchvision==0.17.2
 torchaudio==2.2.2
@@ -15,15 +26,38 @@ pytorch-lightning==2.5.2
 lightning-utilities==0.14.3
 torchmetrics==1.7.4
 
-# Additional neural network utilities
-# Note: Some dependencies may be automatically installed by the above packages
+# ==========================================
+# GPU ACCELERATION OPTIONS
+# ==========================================
+# If you have a GPU, REPLACE the torch lines above with one of these:
 
-# GPU support (CUDA) - uncomment if you have NVIDIA GPU
-# torch==2.2.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
-# torchvision==0.17.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
-# torchaudio==2.2.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# NVIDIA GPU with CUDA (much faster for training):
+# torch==2.2.2+cu118 --index-url https://download.pytorch.org/whl/cu118
+# torchvision==0.17.2+cu118 --index-url https://download.pytorch.org/whl/cu118
+# torchaudio==2.2.2+cu118 --index-url https://download.pytorch.org/whl/cu118
 
-# CPU-only installation (default above) works on all platforms including Linux servers
+# Apple Silicon (M1/M2/M3) - use default versions above, Metal is automatic
 
-# Note: The neural models are currently disabled in production due to stability issues
-# To enable: Set enable_neural_models = True in src/serving/config.py:36
+# ==========================================
+# INSTALLATION COMMANDS
+# ==========================================
+
+# For CPU-only systems (default):
+# pip install -r requirements-neural.txt
+
+# For NVIDIA GPU systems:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# pip install torch-geometric pytorch-lightning lightning-utilities torchmetrics
+
+# For Apple Silicon (M1/M2/M3):
+# pip install torch torchvision torchaudio  # Metal acceleration automatic
+# pip install torch-geometric pytorch-lightning lightning-utilities torchmetrics
+
+# ==========================================
+# NOTES
+# ==========================================
+# - Neural models are currently DISABLED by default (safe for production)
+# - To enable: Set enable_neural_models = True in src/serving/config.py:36
+# - GPU acceleration mainly benefits model training, not just inference
+# - CPU-only installation is sufficient for most use cases
+# - Run 'python detect_gpu.py' to get personalized recommendations
